@@ -7,3 +7,8 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     return "Hello, World!"
+
+# Check if the script is being run directly
+if __name__ == '__main__':
+    # run the Flask application
+    app.run(debug=True)
