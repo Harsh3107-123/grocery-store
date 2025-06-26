@@ -1,0 +1,54 @@
+{% extends "layout.html" %}  <!-- Inherit from the base layout template -->
+
+{% block content %}  <!-- Start the content block for page-specific content -->
+<h1>Register</h1>
+
+<!-- Registration form starts here -->
+<form action="" method="post" class="form">
+  <!-- action="": Submits the form to the current URL -->
+  <!-- method="post": Sends form data as POST request (more secure for passwords) -->
+  <!-- class="form": Applies custom or Bootstrap styles to the form -->
+
+  <!-- Username input field -->
+  <div class="form-group">
+    <!-- for="username": Links the label to the input with id="username" -->
+    <!-- class="form-label": Bootstrap style for label -->
+    <label for="username" class="form-label">Username</label>
+    <!-- id="username": Uniquely identifies this input, used by the label's 'for' -->
+    <!-- type="text": Standard text input -->
+    <!-- required: User must fill this field before submitting -->
+    <!-- class="form-control": Bootstrap style for input -->
+    <!-- name="username": The key sent to the server when the form is submitted -->
+    <input type="text" id="username" required class="form-control" name="username">
+  </div>
+
+  <!-- Password input field -->
+  <div class="form-group">
+    <label for="password" class="form-label">Password</label>
+    <!-- id="password": Uniquely identifies this input, used by the label's 'for' -->
+    <!-- type="password": Hides the input text (for passwords) -->
+    <input type="password" id="password" required class="form-control" name="password">
+  </div>
+
+  <!-- Confirm password input field -->
+  <div class="form-group">
+    <label for="confirm_password" class="form-label">Confirm Password</label>
+    <!-- id="confirm_password": Uniquely identifies this input, used by the label's 'for' -->
+    <!-- type="password": Hides the input text (for passwords) -->
+    <input type="password" id="confirm_password" required class="form-control" name="confirm_password">
+  </div>
+
+  <!-- Name input field -->
+  <div class="form-group">
+    <label for="name" class="form-label">Full Name</label>
+    <!-- id="name": Uniquely identifies this input, used by the label's 'for' -->
+    <!-- type="text": Standard text input for user's name -->
+    <input type="text" id="name" class="form-control" name="name">
+  </div>
+
+
+  <input type="submit" class="btn btn-primary" value="Register">
+</form>
+<!-- Registration form ends here -->
+
+{% endblock %}  <!-- End the content block -->lock -->

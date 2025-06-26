@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+{% block content %}
+<!-- creating a form with a title LOGIN and a submit button -->
+<form class="form">
+    <h1>LOGIN</h1>
+    <!-- The class attribute in HTML is used to assign one or more class names to an element, which can then be targeted and styled using CSS. -->
+    <div class="form-group">
+        <!-- label tag is used to define a label for input and for in it tells that which input block it belongs to -->
+        <label for="loginname" class="form-label" >Username</label>
+        <!-- The name attribute in HTML is used to give a form input a name. When you submit the form, the value entered in that input is sent to the server with the given name as the key. -->
+        <input id="loginname" type="text" required class ="form-control " name="loginname">
+    </div>
+    <div class="form-group">
+        <label for="loginpassword" class="form-label">Password</label>
+        <!-- type specifies what kind of data is been inputted in the form -->
+        <input id="loginpassword" type="password" required class="form-control" name="loginpassword">
+    </div>
+    <button type="submit"  value="login" class="btn btn-primary">Login</button>
+    <p><b>Not Registered yet?</b> Don't worry press the below button</p>
+    <input type="submit" class="btn btn-primary" value="Register">
+{% endblock %}
