@@ -4,6 +4,10 @@ from app import app
 from flask_sqlalchemy import SQLAlchemy
 # make instance of database (db)
 db=SQLAlchemy(app)
+
+#importing security stuff
+from werkzeug.security import generate_password_hash
+
 #creating user model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -11,7 +15,6 @@ class User(db.Model):
     passhash = db.Column(db.String(256), nullable=False)
     name = db.Column(db.String(50), nullable=True)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
-
 # creating category model
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -43,7 +46,7 @@ class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     datetime = db.Column(db.DateTime, nullable=False)
-    orders = db.relationship('Order', backref='order', lazy=True)
+    orders = db.relationship('Order', backref='transaction', lazy=True)
 
 # creating order model
 class Order(db.Model):
@@ -57,3 +60,10 @@ class Order(db.Model):
 with app.app_context():
     #  creates all the database tables defined by your models (if they don’t already exist)
     db.create_all()
+    #create admin ceredentialals
+    admin=User.query.filter_by(is_admin=True).first()
+    if not admin:
+        password_hash=generate_password_hash('admin@123')
+        admin=User(username='Admin',passhash=password_hash,is_admin=True)
+        db.session.add(admin)
+        db.session.commit()

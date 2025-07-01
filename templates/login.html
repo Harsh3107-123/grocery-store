@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block content %}
 <!-- creating a form with a title LOGIN and a submit button -->
-<form class="form">
+<form action='/login' method="POST" class="form">
     <h1>LOGIN</h1>
     <!-- The class attribute in HTML is used to assign one or more class names to an element, which can then be targeted and styled using CSS. -->
     <div class="form-group">
@@ -17,5 +17,5 @@
     </div>
     <button type="submit"  value="login" class="btn btn-primary">Login</button>
     <p><b>Not Registered yet?</b> Don't worry press the below button</p>
-    <input type="submit" class="btn btn-primary" value="Register">
+    <a href="{{ url_for('register') }}" class="btn btn-primary">Register</a>
 {% endblock %}
