@@ -15,7 +15,8 @@
 </head>
 
 <body>
-    {% include "navbar.html" %}
+    <!-- allow to access session details -->
+    {% include "navbar.html" with context %}
     <!-- The container class in Bootstrap automatically adds left and right padding (and centers the content) to keep your content nicely -->
     {% with messages = get_flashed_messages() %}
     {% if messages %}
