@@ -1,0 +1,36 @@
+{% extends 'layout.html' %} 
+{% block title %}Profile page{% endblock %} 
+{% block content %}
+<!-- print the username here -->
+<div>Hello {{user.username}}</div>
+<img src="
+https://api.dicebear.com/9.x/lorelei/svg?seed={{ user.username }}" width="100" alt="profile picture">
+<div>
+<a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
+</div>
+<div>
+<form method="Post" action="/profile">
+<div class="form-group">
+    <label class="form-label" for="username">Username</label>
+    <input id="username" name="username" type="text" class="form-control" value="{{ user.username }}">
+</div>
+<div class="form-group">
+    <label class="form-label" for="password">Current password</label>
+    <input id="password" name="password" type="text" required class="form-control">
+</div>
+<div class="form-group">
+    <label class="form-label" for="new_password">New Password</label>
+    <input id="new_password" name="new_password" type="text" class="form-control" required>
+</div>
+<div class="form-group">
+    <label class="form-label" for="name">Name</label>
+    <input id="name" name="name" type="text" class="form-control" value="{{ user.username }}">
+</div>
+<div class="form-group">
+    <input type="submit" value="Update"  class="btn btn-primary" >
+</div>
+</form>
+</div>
+
+
+{% endblock %}
