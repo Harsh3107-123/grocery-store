@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+{% block title %}
+Admin Dashboard
+{% endblock %}
+{% block content %}
+<h1 class="display-1">Admin Dashboard</h1>
+<a href="{{ url_for('add_category') }}" class="btn btn-primary">
+    <i class="fa fa-plus" aria-hidden="true"></i>
+    Add Category</a>
+<h2 class="display-1">Categories</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Category ID</th>
+            <th>Category Name</th>
+            <th>No of Products</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for category in categories %}
+        <tr>
+            <td>{{ category.id }}</td>
+            <td>{{ category.name }}</td>
+            <td>{{ category.products | length }}</td>
+            <td>
+                <a href="{{ url_for('show_category', id=category.id) }}" class="btn btn-primary">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                    show</a>
+                <a href="{{ url_for('edit_category', id=category.id) }}" class="btn btn-primary">
+                    <i class="fa fa-edit" aria-hidden="true"></i>
+                    Edit</a>
+                <a href="{{ url_for('delete_category',id=category.id) }}" class="btn btn-warning">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                    Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+
+
+    </tbody>
+{% endblock %}

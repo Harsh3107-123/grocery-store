@@ -10,6 +10,8 @@
     <!-- link to the bootstrap css file -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- font awesome cdn allow to insert icons  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     {% block style %} {% endblock %}
 </head>
@@ -18,17 +20,8 @@
     <!-- allow to access session details -->
     {% include "navbar.html" with context %}
     <!-- The container class in Bootstrap automatically adds left and right padding (and centers the content) to keep your content nicely -->
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-danger" role="alert">
-        {{ message }}
-    </div>
-
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-
+     {% include "message.html" %}
+     
     <div class="container">
         {% block content %}
         {% endblock %}

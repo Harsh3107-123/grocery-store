@@ -20,7 +20,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True)
     # It sets up a link so you can easily get all products in a category, and from a product, you can find its category.
-    products = db.relationship('Product', backref='category', lazy=True)
+    products = db.relationship('Product', backref='category', lazy=True,cascade="all, delete-orphan")
 
 # creating product model
 class Product(db.Model):

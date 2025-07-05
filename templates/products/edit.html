@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+{% block title %}Add product{% endblock %}
+{% block content %}
+<h1 class="display-1">Add Product</h1>
+<form method="Post" action="/product/{{ product.id }}/edit" class="form">
+    <div class="form-group">
+        <label for="name">Product name</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{product.name}}">
+    </div>
+    <div class="form-group">
+        <label for="price">Price</label>
+        <input type="text" min="1" class="form-control" id="price" name="price" value="{{product.price}}" >
+    </div>
+    <div class="form-group">
+        <label for="quantity">quantity</label>
+        <input type="text" min="1" class="form-control" id="quantity" name="quantity" value="{{product.quantity}}">
+    </div>
+    <div class="form-group">
+        <label for="man_date">Manufacture Date</label>
+        <input type="date" class="form-control" id="man_date" name="man_date" value="{{product.man_date}}">
+    </div>
+    <div class="form-group">
+        <label for="category">Category</label>
+        <select class="form-control" id="category" name="category_id" required>
+            {% for category in categories %}
+            {% if product.category_id ==category_id %}
+            <option selected value="{{ product.category_id }}">{{ category.name }}</option>
+            {% else   %}
+            <option value="{{ category.id }}">{{ category.name }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+{% endblock %}

@@ -9,6 +9,9 @@
         <!-- the reason this html page is able to access the session is because we have included this page with app_context -->
         {% if 'user_id' in session %}
         <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Home</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="{{ url_for('profile') }}">Profile</a>
         </li>
         {% else %}
