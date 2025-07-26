@@ -5,6 +5,7 @@ from flask import Flask
 app = Flask(__name__)
 import config
 import models
+import api
 import routes
 # Check if the script is being run directly
 if __name__ == '__main__':

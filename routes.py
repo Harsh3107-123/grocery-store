@@ -7,13 +7,14 @@ from flask import render_template,request,redirect,url_for,flash,session
 
 # now import some important stuff from models for backend validation
 # it is good practise to  import only those things which are required in the file
-from models import User, db,Category,Product
+from models import *
 
 # for security important stuff from  werkzeug.security
 from werkzeug.security import generate_password_hash,check_password_hash
+
 from functools import wraps
-
-
+import csv
+from uuid import uuid4
 from datetime import datetime
 
 @app.route('/login')
@@ -47,7 +48,7 @@ def login_post():
     if user.is_admin:
         return redirect(url_for('admin'))
 
-    return redirect(url_for('index'))
+    return redirect(url_for('home'))
 
 # define route for the registeration of the user
 @app.route('/register')
@@ -151,8 +152,7 @@ def profile_post():
 def index():
     
     #check if the user is in the session or not(we can say that it is a cookie) this will not allow us to enter in the index page directly
-    return render_template("index.html")
-
+    return redirect(url_for('home'))
 #adding logout button in here
 @app.route('/logout')
 @login_required
@@ -165,14 +165,36 @@ def logout():
 @login_required
 def home():
     user=User.query.get(session['user_id'])
-    return render_template('home.html',user=user)
+    categories=Category.query.all()
+    
+    cname=request.args.get('cname') or ''
+    pname=request.args.get('pname') or ''
+    price=request.args.get('price')
+    
+    if price:
+        try:
+            price=float(price)
+        except ValueError:
+            flash("Invalid price")
+            return redirect(url_for('home'))    
+        if price <=0:
+            flash("Invalid price")
+            return redirect(url_for('home'))
+            
+    
+    if cname:
+        categories=Category.query.filter(Category.name.ilike(f"%{cname}%")).all()
+        
+    return render_template('home.html',user=user,categories=categories,cname=cname,pname=pname,price=price)
 
 
 @app.route('/admin')
 @admin_required
 def admin():
     categories=Category.query.all()
-    return render_template('admin.html',categories=categories)
+    category_names=[category.name for category in categories]
+    category_sizes=[len(category.products) for category in categories]
+    return render_template('admin.html',categories=categories,category_names=category_names,category_sizes=category_sizes)
 
 @app.route('/category/add')
 @admin_required
@@ -294,10 +316,7 @@ def add_product_post(category_id):
     return redirect(url_for('admin'))
 
 
-@app.route('/category/<int:id>')
-@admin_required
-def show_product(id):
-    return "show product"
+
 
 @app.route('/product/<int:id>/edit')
 @admin_required
@@ -365,3 +384,104 @@ def delete_product_post(id):
     db.session.commit()
     flash("category is deleted")
     return redirect(url_for('admin'))
+
+@app.route('/add_to_cart/<int:product_id>',methods=['POST'])
+@login_required
+def add_to_cart(product_id):
+    product=Product.query.get(product_id)
+    if not product:
+        flash("Product does not exist")
+        return redirect(url_for('index'))
+    quantity=request.form.get('quantity')
+    try:
+        quantity=int(quantity)
+    except ValueError:
+        flash('Invalid quantity')
+        return redirect(url_for('index'))
+    if quantity<=0 or quantity > product.quantity:
+        flash(f'Invalid quantity should be between 1 and {product.quantity}')    
+        return redirect(url_for('index'))
+    
+    cart=Cart.query.filter_by(user_id=session['user_id'],product_id=product_id).first()
+    
+    if cart:
+        if quantity+cart.quantity>product.quantity:
+            flash(f"Invlaid quantity, Should be between 1 and {product.quantity} ")
+            return redirect(url_for('index'))
+        cart.quantity+=quantity
+    else:
+        cart=Cart(user_id=session['user_id'],product_id=product.id,quantity=quantity)
+        db.session.add(cart)
+    db.session.commit()
+    flash('product is added successfully to cart')
+    return redirect(url_for('index'))
+
+@app.route('/cart')
+@login_required
+def cart():
+    carts=Cart.query.filter_by(user_id=session['user_id']).all()
+    total_amount = sum([cart.product.price * cart.quantity for cart in carts])
+    return render_template('cart.html',carts=carts,total_amount=total_amount)
+
+@app.route('/cart/<int:id>/delete',methods=['POST'])
+@login_required
+def delete_cart(id):
+    cart=Cart.query.get(id)
+    if not cart:
+        flash("You do not have a cart with this id")
+        return redirect(url_for('cart'))
+    if cart.user_id!=session['user_id']:
+        flash("Your are not authorised")
+        return redirect(url_for('cart'))
+    db.session.delete(cart)
+    db.session.commit()
+    return redirect(url_for('cart'))
+
+@app.route('/checkout',methods=['POST'])
+@login_required
+def checkout():
+    carts = Cart.query.filter_by(user_id=session['user_id']).all()
+    if not carts:
+        flash('Cart is empty')
+        return redirect(url_for('cart'))
+
+    transaction = Transaction(user_id=session['user_id'], datetime=datetime.now())
+    for cart in carts:
+        order = Order(
+        transaction=transaction,
+        user_id=session['user_id'],  # use 'user_id', not 'user'
+        product_id=cart.product.id,  # use product_id, not product
+        quantity=cart.quantity,
+        price=cart.product.price
+    )
+        if cart.product.quantity < cart.quantity:
+            flash(f'Product {cart.product.name} is out of stock')
+            return redirect(url_for('delete_cart', id=cart.id))
+        cart.product.quantity -= cart.quantity
+        db.session.add(order)
+        db.session.delete(cart)
+    db.session.add(transaction)
+    db.session.commit()
+
+    flash('Order placed successfully')
+    return redirect(url_for('orders'))
+
+@app.route('/orders')
+@login_required
+def orders():
+    transactions = Transaction.query.filter_by(user_id=session['user_id']).order_by(Transaction.datetime.desc()).all()
+    return render_template('orders.html', transactions=transactions)
+
+@app.route('/export_csv')
+@login_required
+def export_csv():
+    transactions = Transaction.query.filter_by(user_id=session['user_id'])
+    filename=uuid4().hex+'.csv'
+    url='static/csv/'+filename
+    with open(url,'w',newline='') as file:
+        writer=csv.writer(file)
+        writer.writerow(['transaction_id','product_name', 'quantity', 'price', 'datetime'])
+        for transaction in transactions:
+            for order in transaction.orders:
+                writer.writerow([transaction.id, order.product.name, order.quantity, order.price, transaction.datetime])
+    return redirect(url_for('static', filename='csv/'+filename))

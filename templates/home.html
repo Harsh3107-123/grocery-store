@@ -1,5 +1,64 @@
 {% extends 'layout.html' %}
 {% block title %}Home{% endblock %}
+
 {% block content %}
-<h1>Welcome to home page {{ user.username }}</h1>
+
+</div>
+{% include 'searchbar.html' %}
+<hr>
+<div class="categories-list">
+  {% for category in categories %}
+  <div class="category-item">
+    <h2>{{ category.name }}</h2>
+    <div class="products">
+      {% for product in category.products %}
+      {% if pname!='' and pname.lower() in product.name.lower() or not pname %}
+      {% if price and (product.price == price or product.price < price ) or not price %} <div class="card">
+        <img src="http://picsum.photos/200/200" class="card-img-top" alt="{{ product.name }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ product.name }}</h5>
+          <p class="card-text">Price: &#8377;{{ product.price }}</p>
+          <p class="card-text">Available : {{ product.quantity }}</p>
+          <p class="card-text">man_date {{ product.man_date }}</p>
+          {% if product.quantity>0 %}
+          <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+            <strong>Quantity:</strong>
+            <input type="number" name="quantity" min="1" max='{{ product.quantity }}' value="1"
+              class="form-control mb-2">
+            <button type="submit" class="btn btn-primary">Add to Cart</button>
+          </form>
+          {% else %}
+          <button disabled>Out of stock</button>
+          {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}
+</div>
+{% endblock %}
+
+{% block style %}
+<style>
+  .categories-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .products {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .card {
+    width: 18rem;
+    margin: 10px;
+  }
+</style>
 {% endblock %}

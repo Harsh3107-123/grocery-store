@@ -31,8 +31,8 @@ class Product(db.Model):
     quantity = db.Column(db.Integer, nullable=False, default=0)
     man_date = db.Column(db.Date, nullable=False)
     
-    carts = db.relationship('Cart', backref='cart', lazy=True)
-    orders = db.relationship('Order', backref='order', lazy=True)
+    carts = db.relationship('Cart', backref='product', lazy=True)
+    orders = db.relationship('Order', backref='product', lazy=True)
 
 # creating cart model
 class Cart(db.Model):
@@ -40,6 +40,7 @@ class Cart(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=1)
+    
 
 # creating transaction model 
 class Transaction(db.Model):
